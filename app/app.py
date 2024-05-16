@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
+import path
 
 
 st.title('Gapminder')
@@ -51,14 +52,16 @@ def load_and_transform_df():
     lex_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/lex.csv", "LEX")
     pop_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/pop.csv", "POP")
 
-    file_path = "/Users/ligiavergara/gapminder/app/gni.csv"
+    script_dir = path(__file__).resolve().parent
 
-    if os.path.exists(file_path):
-        df = pd.read_csv(file_path)
-        # Rest of your data processing and analysis
-    else:
-        st.error(f"Error: File not found at {file_path}")
+    # Construct the path to your CSV file
+    file_path = script_dir / "gni.csv"  # Replace "your_file.csv" with your filename
 
+    # Read the CSV file
+    df = pd.read_csv(file_path)
+    if df is None:
+        st.error("Data loading failed. Please check the file paths and try again.")
+        return None  
 
     # Check if any files failed to load
     if gni_df is None or lex_df is None or pop_df is None:
