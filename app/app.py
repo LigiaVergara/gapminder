@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
-import path
+from pathlib import Path
 
 
 st.title('Gapminder')
