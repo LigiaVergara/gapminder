@@ -101,6 +101,7 @@ filtered_df = merged_df[
 # Determine the maximum GNI value across all years to keep the x-axis fixed
 max_gni = merged_df["GNI"].max()
 
+
 # Create Bubble Chart
 fig = px.scatter(
     filtered_df,
@@ -112,6 +113,7 @@ fig = px.scatter(
     labels={"GNI": "Gross National Income per Capita (log scale)", "LEX": "Life Expectancy"},
     range_x=[0, max_gni * 1.1]  # Set the x-axis range to fix the max value
 )
+fig.update_xaxes(range=[0.1, filtered_df['GNI'].max()])  # Set minimum x to 0.1
 
 # Customize layout (optional)
 fig.update_layout(
