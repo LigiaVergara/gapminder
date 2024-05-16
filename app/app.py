@@ -9,7 +9,6 @@ st.write("Unlocking Lifetimes: Visualizing Progress in Longevity and Poverty Era
 # ----------------------
 # Data Loading & Preprocessing
 # ----------------------
-@st.cache_data
 def load_data():
     return pd.read_parquet("app/gapminder_data.parquet")
 
