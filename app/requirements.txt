@@ -3,3 +3,6 @@ pandas
 plotly.express
 os
 Path
+numpy
+seaborn
+matplotlib.pyplot

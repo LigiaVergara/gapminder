@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.express as px
 import os
 from pathlib import Path
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 st.title('Gapminder')
@@ -21,26 +24,6 @@ def load_and_transform_df():
         try:
             df = pd.read_csv(file_path)
             melted_df = pd.melt(df, id_vars=['country'], var_name='year', value_name=value_name)
-
-            # Convert relevant columns to numeric (with fillna)
-            for col in [value_name]:  # 'POP' is also included
-                melted_df[col] = (
-                    melted_df[col]
-                    .astype(str)
-                    .str.replace(r'[kMB]', '', regex=True)
-                    .str.replace(',', '.', regex=False)  # For European decimals
-                    .replace('', '0')  # Replace blanks with 0
-                    .astype(float)
-                )
-
-                # Fill NaN with Forward Fill
-                melted_df[col] = melted_df[col].fillna(method='ffill')
-
-                # Scale values
-                melted_df[col] = melted_df[col].apply(
-                    lambda x: x * 1000 if x < 1000000 else (x * 1000000 if x < 1000000000 else x)
-                )
-
             return melted_df
 
         except FileNotFoundError:
@@ -68,15 +51,31 @@ def load_and_transform_df():
 
     try:
         # Merge DataFrames after fill NaN
-        merged_df = gni_df.merge(lex_df, on=['country', 'year']).merge(pop_df, on=['country', 'year'])
+        merged_df = lex_df.merge(gni_df, on=['country', 'year']).merge(pop_df, on=['country', 'year'])
         # Convert year column to int
         merged_df["year"] = pd.to_numeric(merged_df["year"])
+        def convert_notation(value):
+            if isinstance(value, str):
+                if value[-1].lower() == 'k':
+                    return float(value[:-1]) * 1000
+                elif value[-1].lower() == 'm':
+                    return float(value[:-1]) * 1000000
+                elif value[-1].lower() == 'b':
+                    return float(value[:-1]) * 1000000000
+            return value  # Return unchanged if not applicable
+
+        columns_to_convert = ['GNI', 'POP']  # Add column names you want to convert
+        for col in columns_to_convert:
+            merged_df[col] = merged_df[col].apply(convert_notation).astype(float)
+        
         return merged_df
     
     except Exception as e:  # Catching a broader range of potential errors during the merge
         print(f"Error merging DataFrames: {e}")
         st.error("An error occurred while merging the data. Please check the logs for details.")
         return None
+    
+    
 
 
 
@@ -84,7 +83,7 @@ def load_and_transform_df():
 # Streamlit App
 # ----------------------
 merged_df = load_and_transform_df()
-
+merged_df['GNI_log'] = merged_df['GNI'].apply(np.log)
 # Add Year Slider (after converting to numeric)
 year_min = int(merged_df['year'].min())
 year_max = int(merged_df['year'].max())
@@ -100,20 +99,18 @@ filtered_df = merged_df[
 
 # Determine the maximum GNI value across all years to keep the x-axis fixed
 max_gni = merged_df["GNI"].max()
-st.write(merged_df["GNI"].min())
 
 # Create Bubble Chart
-fig = px.scatter(
-    filtered_df,
-    x="GNI", y="LEX",
-    size="POP", color="country",
-    hover_name="country",
-    log_x=True, size_max=60,
-    title=f"Bubble Chart for {selected_year}",
-    labels={"GNI": "Gross National Income per Capita (log scale)", "LEX": "Life Expectancy"},
-    range_x=[0, max_gni * 1.1]  # Set the x-axis range to fix the max value
-)
-fig.update_xaxes(range=[0.1, filtered_df['GNI'].max()])  # Set minimum x to 0.1
+fig = plt.figure(figsize=(10, 8))
+sns.scatterplot(data=merged_df, x='GNI', y='LEX', size='POP', hue='Country', sizes=(100, 2000), legend='brief')
+plt.xscale('log')  # Set x-axis to logarithmic scale
+plt.xlim(100, max_gni*1.1)  # Adjust x-axis limits based on your data range
+plt.xlabel('GNI per Capita (PPP-adjusted)')
+plt.ylabel('Life Expectancy')
+plt.title('Bubble Chart: GNI per Capita vs. Life Expectancy')
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+plt.grid(True)
+plt.show()
 
 # Customize layout (optional)
 fig.update_layout(
