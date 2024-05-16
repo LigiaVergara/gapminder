@@ -48,20 +48,18 @@ def load_and_transform_df():
             return None
 
     # Load and transform data
-    gni_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/gni.csv", "GNI")
-    lex_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/lex.csv", "LEX")
-    pop_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/pop.csv", "POP")
+    
 
     script_dir = Path(__file__).resolve().parent
 
     # Construct the path to your CSV file
-    file_path = script_dir / "gni.csv"  # Replace "your_file.csv" with your filename
-
-    # Read the CSV file
-    df = pd.read_csv(file_path)
-    if df is None:
-        st.error("Data loading failed. Please check the file paths and try again.")
-        return None  
+    file_gni = script_dir / "gni.csv"
+    file_lex = script_dir / "lex.csv"
+    file_pop = script_dir / "pop.csv"   
+    gni_df = load_and_transform_data(file_gni)
+    lex_df = load_and_transform_data(file_lex)
+    pop_df = load_and_transform_data(file_pop)
+    
 
     # Check if any files failed to load
     if gni_df is None or lex_df is None or pop_df is None:
