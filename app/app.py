@@ -52,7 +52,7 @@ def load_and_transform_df():
     lex_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/lex.csv", "LEX")
     pop_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/pop.csv", "POP")
 
-    script_dir = path(__file__).resolve().parent
+    script_dir = Path(__file__).resolve().parent
 
     # Construct the path to your CSV file
     file_path = script_dir / "gni.csv"  # Replace "your_file.csv" with your filename
