@@ -100,7 +100,7 @@ filtered_df = merged_df[
 
 # Determine the maximum GNI value across all years to keep the x-axis fixed
 max_gni = merged_df["GNI"].max()
-
+st.write(merged_df["GNI"].min())
 
 # Create Bubble Chart
 fig = px.scatter(
