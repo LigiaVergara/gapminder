@@ -9,9 +9,8 @@ st.write("Unlocking Lifetimes: Visualizing Progress in Longevity and Poverty Era
 # ----------------------
 # Data Loading & Preprocessing
 # ----------------------
-def load_and_transform_data(file_path, value_name):
-    df = pd.read_csv(file_path)
-    melted_df = pd.melt(df, id_vars=['country'], var_name='year', value_name=value_name)
+def load_data():
+    return pd.read_parquet("app/gapminder_data.parquet")
 
     # Convert columns to numeric (improved handling of missing values)
     melted_df[value_name] = (
