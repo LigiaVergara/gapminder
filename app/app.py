@@ -46,9 +46,9 @@ def load_and_transform_df():
             return None
 
     # Load and transform data
-    gni_df = load_and_transform_data("app/gni.csv", "GNI")
-    lex_df = load_and_transform_data("app/lex.csv", "LEX")
-    pop_df = load_and_transform_data("app/pop.csv", "POP")
+    gni_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/gni.csv", "GNI")
+    lex_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/lex.csv", "LEX")
+    pop_df = load_and_transform_data("/Users/ligiavergara/gapminder/app/pop.csv", "POP")
 
     # Check if any files failed to load
     if gni_df is None or lex_df is None or pop_df is None:
