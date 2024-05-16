@@ -56,9 +56,9 @@ def load_and_transform_df():
     file_gni = script_dir / "gni.csv"
     file_lex = script_dir / "lex.csv"
     file_pop = script_dir / "pop.csv"   
-    gni_df = load_and_transform_data(file_gni)
-    lex_df = load_and_transform_data(file_lex)
-    pop_df = load_and_transform_data(file_pop)
+    gni_df = load_and_transform_data(file_gni, "GNI")
+    lex_df = load_and_transform_data(file_lex, "LEX")
+    pop_df = load_and_transform_data(file_pop, "POP")
     
 
     # Check if any files failed to load
