@@ -1,12 +1,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
 from pathlib import Path
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+import plotly.graph_objects as go
 
 st.title('Gapminder')
 st.write("Unlocking Lifetimes: Visualizing Progress in Longevity and Poverty Eradication")
@@ -90,7 +89,8 @@ year_max = int(merged_df['year'].max())
 selected_year = st.slider("Year", year_min, year_max, year_max)
 
 all_countries = sorted(merged_df['country'].unique())
-selected_countries = st.multiselect("Countries", all_countries, default=all_countries)
+def_countries = ["Japan", "China", "Colombia", "USA", "Germany"]
+selected_countries = st.multiselect("Countries", all_countries, default=def_countries)
 
 # Filter Data based on year and selected countries
 filtered_df = merged_df[
@@ -99,25 +99,38 @@ filtered_df = merged_df[
 
 # Determine the maximum GNI value across all years to keep the x-axis fixed
 max_gni = merged_df["GNI"].max()
+max_lex = merged_df["LEX"].max()
+min_pop = filtered_df['POP'].min()
+max_pop = filtered_df['POP'].max()
+mean_pop = filtered_df['POP'].mean()
 
-# Create Bubble Chart
-fig = plt.figure(figsize=(10, 8))
-sns.scatterplot(data=merged_df, x='GNI', y='LEX', size='POP', hue='Country', sizes=(100, 2000), legend='brief')
-plt.xscale('log')  # Set x-axis to logarithmic scale
-plt.xlim(100, max_gni*1.1)  # Adjust x-axis limits based on your data range
-plt.xlabel('GNI per Capita (PPP-adjusted)')
-plt.ylabel('Life Expectancy')
-plt.title('Bubble Chart: GNI per Capita vs. Life Expectancy')
-plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
-plt.grid(True)
-plt.show()
 
-# Customize layout (optional)
-fig.update_layout(
-    xaxis_title="Gross National Income per Capita (log scale)",
-    yaxis_title="Life Expectancy",
-    showlegend=True,
+# ----------------------
+# Streamlit Visualization
+# ----------------------
+
+# Create the scatter plot with Plotly Express
+fig = px.scatter(
+    filtered_df, 
+    x="GNI", 
+    y="LEX", 
+    size="POP", 
+    color="country",
+    log_x=True,
+    size_max=50,
+    title="Relationship Between GNI per Capita and Life Expectancy<br>(Bubble Size Represents Population)",
+    hover_name="country",
+    hover_data={"POP":":,.0f"}  
 )
 
-# Display the Chart
+# Customize appearance
+fig.update_traces(
+    marker=dict(line=dict(width=0.5, color="DarkSlateGrey"))
+)
+
+# Adjust axis ranges for better visual clarity
+fig.update_layout(
+    yaxis=dict(range=[0, filtered_df["LEX"].max() * 1.1]), 
+    xaxis=dict(range=[0, np.log10(max_gni) + 0.2])
+)
 st.plotly_chart(fig)
