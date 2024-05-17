@@ -13,7 +13,7 @@ st.write("Unlocking Lifetimes: Visualizing Progress in Longevity and Poverty Era
 # ----------------------
 # Data Loading & Preprocessing
 # ----------------------
-
+@st.cache_data
 def load_and_transform_df():
     """Loads all CSVs, processes them, and returns the merged DataFrame."""
 
